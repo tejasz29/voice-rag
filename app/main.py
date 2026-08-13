@@ -125,7 +125,7 @@ ANSWER:
 print("\nGenerating answer...")
 
 response = ollama.chat(
-    model="gemma2:2b",
+    model="qwen2.5:0.5b",
     messages=[
         {
             "role": "user",

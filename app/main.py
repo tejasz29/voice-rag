@@ -1,6 +1,7 @@
 from pypdf import PdfReader
 from sentence_transformers import SentenceTransformer
 import faiss
+import ollama
 
 # -------------------------
 # 1. Read PDF
@@ -70,12 +71,52 @@ question_embedding = model.encode([question])
 # 6. Search FAISS
 # -------------------------
 
-distances, indices = index.search(question_embedding, k=1)
+# Search FAISS
+distances, indices = index.search(question_embedding, k=3)
 
-best_index = indices[0][0]
-best_chunk = chunks[best_index]
+# Collect retrieved chunks
+retrieved_chunks = []
 
-print("\n--- Most Relevant Chunk ---")
-print(best_chunk)
+for index_id in indices[0]:
+    retrieved_chunks.append(chunks[index_id])
 
-print("\nDistance:", distances[0][0])
+print("\n--- Retrieved Context ---")
+
+for i, chunk in enumerate(retrieved_chunks, start=1):
+    print(f"\nChunk {i}:")
+    print(chunk)
+
+
+# Generate answer using Ollama
+context = "\n\n".join(retrieved_chunks)
+
+prompt = f"""
+You are a helpful RAG assistant.
+
+Answer the question using ONLY the provided context.
+If the context does not contain enough information to answer,
+say that you don't have enough information.
+
+Context:
+{context}
+
+Question:
+{question}
+
+Answer:
+"""
+
+response = ollama.chat(
+    model="gemma2:2b",
+    messages=[
+        {
+            "role": "user",
+            "content": prompt
+        }
+    ]
+)
+
+answer = response["message"]["content"]
+
+print("\n--- Answer ---")
+print(answer)

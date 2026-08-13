@@ -59,7 +59,7 @@ print(f"Vectors stored: {index.ntotal}")
 
 
 # -------------------------
-# 5. Ask a question
+# 5. Ask question
 # -------------------------
 
 question = input("\nAsk a question: ")
@@ -68,44 +68,61 @@ question_embedding = model.encode([question])
 
 
 # -------------------------
-# 6. Search FAISS
+# 6. Retrieve top 3 chunks
 # -------------------------
 
-# Search FAISS
 k = min(3, len(chunks))
-distances, indices = index.search(question_embedding, k=k)
 
-# Collect retrieved chunks
+distances, indices = index.search(
+    question_embedding,
+    k=k
+)
+
 retrieved_chunks = []
-
-for index_id in indices[0]:
-    retrieved_chunks.append(chunks[index_id])
 
 print("\n--- Retrieved Context ---")
 
-for i, chunk in enumerate(retrieved_chunks, start=1):
-    print(f"\nChunk {i}:")
+for rank, (index_id, distance) in enumerate(
+    zip(indices[0], distances[0]),
+    start=1
+):
+    chunk = chunks[index_id]
+
+    retrieved_chunks.append(chunk)
+
+    print(f"\nChunk {rank}:")
     print(chunk)
 
 
-# Generate answer using Ollama
+# -------------------------
+# 7. Generate answer
+# -------------------------
+
 context = "\n\n".join(retrieved_chunks)
 
 prompt = f"""
-You are a helpful RAG assistant.
+You are a RAG assistant.
 
-Answer the question using ONLY the provided context.
-If the context does not contain enough information to answer,
-say that you don't have enough information.
+Answer the user's question using ONLY the provided context.
 
-Context:
+If the context does not contain enough information to answer
+the question, say:
+
+"I don't have enough information in the provided document."
+
+Do not use your general knowledge.
+Do not make up information.
+
+CONTEXT:
 {context}
 
-Question:
+QUESTION:
 {question}
 
-Answer:
+ANSWER:
 """
+
+print("\nGenerating answer...")
 
 response = ollama.chat(
     model="gemma2:2b",

@@ -72,7 +72,8 @@ question_embedding = model.encode([question])
 # -------------------------
 
 # Search FAISS
-distances, indices = index.search(question_embedding, k=3)
+k = min(3, len(chunks))
+distances, indices = index.search(question_embedding, k=k)
 
 # Collect retrieved chunks
 retrieved_chunks = []

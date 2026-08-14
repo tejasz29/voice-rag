@@ -6,3 +6,4 @@ rag/
 data/*.pdf
 rag/
 data/*.pdf
+data/msmarco/

@@ -2,26 +2,14 @@ from datasets import load_dataset
 
 dataset = load_dataset(
     "ai4bharat/MSMARCO-XI",
+    data_files="train/hintrain.parquet",
     split="train",
     streaming=True
 )
 
-example = next(iter(dataset))
+for i, example in enumerate(dataset):
+    print("\n--- EXAMPLE", i + 1, "---")
+    print(example)
 
-print("\n--- KEYS ---")
-print(example.keys())
-
-print("\n--- QUERY ---")
-print(example["query"])
-
-print("\n--- ANSWER ---")
-print(example["Answer"])
-
-print("\n--- ENGLISH QUERY ---")
-print(example["Eng_Query"])
-
-print("\n--- ENGLISH ANSWER ---")
-print(example["Eng_Answer"])
-
-print("\n--- PASSAGES ---")
-print(example["passages"])
+    if i == 2:
+        break

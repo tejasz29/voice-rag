@@ -9,7 +9,7 @@ index = faiss.read_index("data/msmarco/hindi.index")
 with open("data/msmarco/hindi_texts.json", "r", encoding="utf-8") as f:
     texts = json.load(f)
 
-model = SentenceTransformer("all-MiniLM-L6-v2")
+model = SentenceTransformer("paraphrase-multilingual-MiniLM-L12-v2")
 
 passage_selected = []
 with open("data/msmarco/hindi_knowledge.jsonl", "r", encoding="utf-8") as f:

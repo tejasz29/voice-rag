@@ -15,7 +15,7 @@ with open(input_path, "r", encoding="utf-8") as f:
 print(f"Loaded passages: {len(texts)}")
 
 # Load embedding model
-model = SentenceTransformer("all-MiniLM-L6-v2")
+model = SentenceTransformer("paraphrase-multilingual-MiniLM-L12-v2")
 
 # Create embeddings
 embeddings = model.encode(
